@@ -1,0 +1,16 @@
+@startuml
+
+[*] --> TweetScraping
+[*] --> ProfileDetails
+TweetScraping --> DownloadMultimedia
+DownloadMultimedia --> ImageCaptioning
+DownloadMultimedia --> TranscribeVideo
+ImageCaptioning --> BuildCorpus
+TranscribeVideo --> BuildCorpus
+BuildCorpus --> KeywordExtraction
+TweetScraping --> CollectStatistics
+ProfileDetails --> SaveProfileSummary
+CollectStatistics --> SaveProfileSummary
+KeywordExtraction --> SaveProfileSummary
+
+@enduml

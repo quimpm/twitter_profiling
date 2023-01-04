@@ -1,0 +1,6 @@
+apache-airflow
+selenium
+webdriver-manager
+transformers
+torch
+pillow
