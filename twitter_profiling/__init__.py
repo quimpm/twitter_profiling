@@ -1,0 +1,1 @@
+DB_HOST="/Users/quimpm/uni/twitter_profiling/twitter_profiling.db"

@@ -3,7 +3,7 @@ import sys
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 from tasks import build_corpus, collect_statistics, image_captioning, \
- scrape_task, save_profile, keyword_extraction
+ scrape_task, keyword_extraction
 from uuid import uuid1
 
 

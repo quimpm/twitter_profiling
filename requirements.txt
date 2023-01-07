@@ -4,3 +4,5 @@ webdriver-manager
 transformers
 torch
 pillow
+graphviz
+sqlalchemy

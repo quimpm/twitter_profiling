@@ -1,5 +1,4 @@
-from util import scrape_wrapper, parse_twitter_number
-from model.user import User
+from twitter_profiling.util import scrape_wrapper, parse_twitter_number
 
 
 def get_banner_image(driver):
@@ -38,13 +37,12 @@ def get_followers(driver, at):
 
 
 def get_user_information(driver):
-    user = User()
-    user.name, user.at = scrape_wrapper(driver, '', get_username_and_at)
-    user.banner_image = scrape_wrapper(driver, '', get_banner_image)
-    user.profile_img = "https://www.twitter.com/" + user.at[1:] + "/photo"
-    user.desc = scrape_wrapper(driver, '', get_description)
-    user.geolocation = scrape_wrapper(driver, '', get_location)
-    user.join_date = scrape_wrapper(driver, '', get_join_date)
-    user.following = scrape_wrapper(driver, 0, get_following, (user.at,))
-    user.followers = scrape_wrapper(driver, 0, get_followers, (user.at,))
-    return user
+    name, at = scrape_wrapper(driver, '', get_username_and_at)
+    banner_image = scrape_wrapper(driver, '', get_banner_image)
+    profile_img = "https://www.twitter.com/" + at[1:] + "/photo"
+    desc = scrape_wrapper(driver, '', get_description)
+    geolocation = scrape_wrapper(driver, '', get_location)
+    join_date = scrape_wrapper(driver, '', get_join_date)
+    following = scrape_wrapper(driver, 0, get_following, (at,))
+    followers = scrape_wrapper(driver, 0, get_followers, (at,))
+    return name, at, banner_image, profile_img, desc, geolocation, join_date, following, followers

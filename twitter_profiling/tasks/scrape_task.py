@@ -1,14 +1,16 @@
 from time import sleep
 from selenium.webdriver import Chrome, ChromeOptions
 from webdriver_manager.chrome import ChromeDriverManager
-from tasks.twitter_scraper.scrape_profile import get_user_information
-from tasks.twitter_scraper.scrape_tweet import get_tweet_information
+from twitter_profiling.tasks.twitter_scraper.scrape_profile import get_user_information
+from twitter_profiling.tasks.twitter_scraper.scrape_tweet import get_tweet_information
 from uuid import uuid1, UUID
+from twitter_profiling.model.user import User
+from twitter_profiling.model.tweet import Tweet
+from twitter_profiling.db.db_session import session
+
 
 #Main algorithm
 def run(profile: str, exec_id: UUID):
-    user_file = open("../data/user.csv", "a")
-    tweets_file = open(f'../data/tweets/{exec_id}.csv', "w")
     options = ChromeOptions()
     options.add_argument('headless')
     options.add_argument('incognito')
@@ -18,8 +20,10 @@ def run(profile: str, exec_id: UUID):
     driver = Chrome(ChromeDriverManager().install(), chrome_options=options)
     driver.get("https://www.twitter.com/" + profile)
     sleep(15)
-    user_info = get_user_information(driver)
-    user_file.write(f'{exec_id},{user_info.to_csv()}')
+    name, at, banner_image, profile_img, desc, geolocation, join_date, following, followers = get_user_information(driver)
+    user = User(exec_id=str(exec_id), name=name, at=at, banner_img=banner_image, profile_img=profile_img, desc=desc, geolocation=geolocation, join_date=join_date, following=following, followers=followers)
+    session.add(user)
+    session.flush()
     tweets_info = {}
     scrolling = True
     last_position = driver.execute_script("return window.pageYOffset;")
@@ -28,12 +32,13 @@ def run(profile: str, exec_id: UUID):
         tweets = driver.find_elements('xpath', './/article[@data-testid="tweet"]')
         for tweet in tweets:
             try:
-                scraped_tweet = get_tweet_information(driver, tweet)
+                username, at, time, text, replies, retweets, likes, views, imgs, link, video = get_tweet_information(driver, tweet)
+                scraped_tweet = Tweet(exec_id=str(exec_id), user_id=user.id, username=username, at=at, time=time, text=text, replies=replies, retweets=retweets, likes=likes, views=views, imgs=imgs, link=link, video=video)
+                if tweets_info.get(hash(scraped_tweet)) is None:
+                    tweets_info[hash(scraped_tweet)] = scraped_tweet
+                    session.add(scraped_tweet)
             except Exception as e:
                 print(e)
-            if tweets_info.get(hash(scraped_tweet)) is None:
-                tweets_info[hash(scraped_tweet)] = scraped_tweet
-                tweets_file.write(scraped_tweet.to_csv())
         scroll_attempt = 0
         while True:
             driver.execute_script('window.scrollTo(0, '+str(curr_position)+');')
@@ -49,8 +54,7 @@ def run(profile: str, exec_id: UUID):
                 sleep(1)
                 break
             curr_position = last_position + 2000
-    user_file.close()
-    tweets_file.close()
+    session.commit()
 
 if __name__ == "__main__":
     run("EvilAFM", uuid1())

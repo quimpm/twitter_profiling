@@ -1,16 +1,14 @@
 @startuml
 
-[*] --> TweetScraping
-[*] --> ProfileDetails
-TweetScraping --> DownloadMultimedia
-DownloadMultimedia --> ImageCaptioning
-DownloadMultimedia --> TranscribeVideo
+[*] --> ProfileScraping
+ProfileScraping --> ImageCaptioning
+ProfileScraping --> SentimentAnalysis
+ProfileScraping --> LinkScraping
 ImageCaptioning --> BuildCorpus
-TranscribeVideo --> BuildCorpus
+SentimentAnalysis --> CollectStatistics
+LinkScraping --> BuildCorpus
 BuildCorpus --> KeywordExtraction
-TweetScraping --> CollectStatistics
-ProfileDetails --> SaveProfileSummary
-CollectStatistics --> SaveProfileSummary
-KeywordExtraction --> SaveProfileSummary
+KeywordExtraction -> BuildProfile
+CollectStatistics -> BuildProfile
 
 @enduml

@@ -1,5 +1,4 @@
-from model.tweet import Tweet
-from util import scrape_wrapper, parse_twitter_number
+from twitter_profiling.util import scrape_wrapper, parse_twitter_number
 
 
 def get_username_and_date(driver, scraped_tweet):
@@ -49,14 +48,13 @@ def get_video(driver, scraped_tweet):
 
 
 def get_tweet_information(driver, scraped_tweet):
-    tweet = Tweet()
-    tweet.username, tweet.at, tweet.time = scrape_wrapper(driver, '', get_username_and_date, (scraped_tweet,))
-    tweet.text = scrape_wrapper(driver, '', get_text, (scraped_tweet,))
-    tweet.replies = scrape_wrapper(driver, 0, get_reply, (scraped_tweet,))
-    tweet.retweets = scrape_wrapper(driver, 0, get_retweet, (scraped_tweet,))
-    tweet.likes = scrape_wrapper(driver, 0, get_like, (scraped_tweet,))
-    tweet.views = scrape_wrapper(driver, 0, get_views, (scraped_tweet,))
-    tweet.imgs = scrape_wrapper(driver, (), get_imgs, (scraped_tweet,))
-    tweet.link = scrape_wrapper(driver, '', get_link, (scraped_tweet,))
-    tweet.video = scrape_wrapper(driver, '', get_video, (scraped_tweet,))
-    return tweet
+    username, at, time = scrape_wrapper(driver, '', get_username_and_date, (scraped_tweet,))
+    text = scrape_wrapper(driver, '', get_text, (scraped_tweet,))
+    replies = scrape_wrapper(driver, 0, get_reply, (scraped_tweet,))
+    retweets = scrape_wrapper(driver, 0, get_retweet, (scraped_tweet,))
+    likes = scrape_wrapper(driver, 0, get_like, (scraped_tweet,))
+    views = scrape_wrapper(driver, 0, get_views, (scraped_tweet,))
+    imgs = scrape_wrapper(driver, (), get_imgs, (scraped_tweet,))
+    link = scrape_wrapper(driver, '', get_link, (scraped_tweet,))
+    video = scrape_wrapper(driver, '', get_video, (scraped_tweet,))
+    return username, at, time, text, replies, retweets, likes, views, imgs, link, video
