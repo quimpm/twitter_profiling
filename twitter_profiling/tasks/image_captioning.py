@@ -5,11 +5,9 @@ from twitter_profiling.db.db_session import session
 
 
 def run(exec_id):
-    captions = []
     image_to_text = pipeline("image-to-text", model="nlpconnect/vit-gpt2-image-captioning")
     tweets = session.query(Tweet).filter_by(exec_id=exec_id).all()
     for tweet in tweets:
-        tweet_img = []
         for img in tweet.imgs.split('|'):
             if img:
                 caption = ImageCaption(exec_id, tweet.id, image_to_text(img)[0]['generated_text'])
