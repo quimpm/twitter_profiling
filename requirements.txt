@@ -6,3 +6,11 @@ torch
 pillow
 graphviz
 sqlalchemy
+nltk
+scikit-learn
+easynmt
+spacy
+spacy-transformers
+fasttext
+umap-learn
+matplotlib

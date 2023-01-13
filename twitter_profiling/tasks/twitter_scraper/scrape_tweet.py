@@ -1,4 +1,5 @@
 from twitter_profiling.util import scrape_wrapper, parse_twitter_number
+from easynmt import EasyNMT
 
 
 def get_username_and_date(driver, scraped_tweet):
@@ -47,9 +48,16 @@ def get_video(driver, scraped_tweet):
     return video.get_attribute("src")[5:]
 
 
+def translate_text(text):
+    model = EasyNMT('opus-mt')
+    try:
+        return model.translate(text, target_lang="en")
+    except:
+        return text
+
 def get_tweet_information(driver, scraped_tweet):
     username, at, time = scrape_wrapper(driver, '', get_username_and_date, (scraped_tweet,))
-    text = scrape_wrapper(driver, '', get_text, (scraped_tweet,))
+    text = translate_text(scrape_wrapper(driver, '', get_text, (scraped_tweet,)))
     replies = scrape_wrapper(driver, 0, get_reply, (scraped_tweet,))
     retweets = scrape_wrapper(driver, 0, get_retweet, (scraped_tweet,))
     likes = scrape_wrapper(driver, 0, get_like, (scraped_tweet,))

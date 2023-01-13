@@ -1,5 +1,15 @@
 from time import sleep
 import os
+from twitter_profiling import STATIC_FOLDER
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+
+def get_language(text):
+    tokenizer = AutoTokenizer.from_pretrained("papluca/xlm-roberta-base-language-detection")
+    model = AutoModelForSequenceClassification.from_pretrained("papluca/xlm-roberta-base-language-detection")
+    lang_classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
+    return max(lang_classifier(text[:512]), key=lambda x: x["score"])["label"]
 
 
 def scrape_wrapper(driver, default, func, args=None):
@@ -38,3 +48,8 @@ def write_in_tmp(filename, content):
         os.mkdir("../data/tmp")
     with open('../data/tmp/'+filename, "w") as tmp_file:
         tmp_file.write(content)
+
+
+def create_static_folder(exec_id):
+    if not os.path.exists(STATIC_FOLDER+exec_id):
+        os.mkdir(STATIC_FOLDER+exec_id)

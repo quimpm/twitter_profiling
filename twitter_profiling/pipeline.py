@@ -3,8 +3,10 @@ import sys
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 from tasks import build_corpus, collect_statistics, image_captioning, \
- scrape_task, keyword_extraction
+ scrape_task, relevant_words, sentiment_analysis
 from uuid import uuid1
+from twitter_profiling.model.execution import Execution
+from twitter_profiling.db.db_session import session
 
 
 default_args = {
@@ -22,6 +24,9 @@ default_args = {
 dag = DAG('twitter_profiling', default_args=default_args, schedule=None)
 
 execution_id = uuid1()
+execution = Execution(execution_id, sys.argv[0])
+session.add(execution)
+session.commit()
 
 tweet_scraping_task = PythonOperator(
     task_id='tweet_scraping',
@@ -40,6 +45,12 @@ image_captioning_task = PythonOperator(
 build_corpus_task = PythonOperator(
     task_id='build_corpus',
     python_callable=build_corpus.run,
+    op_args=[execution_id],
+    dag=dag)
+
+sentiment_analysis_task = PythonOperator(
+    task_id='sentiment_analysis',
+    python_callable=sentiment_analysis.run,
     op_args=[execution_id],
     dag=dag)
 

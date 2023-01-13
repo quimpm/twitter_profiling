@@ -1,4 +1,5 @@
 from time import sleep
+from datetime import datetime
 from selenium.webdriver import Chrome, ChromeOptions
 from webdriver_manager.chrome import ChromeDriverManager
 from twitter_profiling.tasks.twitter_scraper.scrape_profile import get_user_information
@@ -11,6 +12,7 @@ from twitter_profiling.db.db_session import session
 
 #Main algorithm
 def run(profile: str, exec_id: UUID):
+    print(datetime.now())
     options = ChromeOptions()
     options.add_argument('headless')
     options.add_argument('incognito')
@@ -28,7 +30,7 @@ def run(profile: str, exec_id: UUID):
     scrolling = True
     last_position = driver.execute_script("return window.pageYOffset;")
     curr_position = last_position + 3000
-    while scrolling and len(tweets_info.values()) < 50:
+    while scrolling and len(tweets_info.values()) < 100:
         tweets = driver.find_elements('xpath', './/article[@data-testid="tweet"]')
         for tweet in tweets:
             try:
@@ -57,4 +59,4 @@ def run(profile: str, exec_id: UUID):
     session.commit()
 
 if __name__ == "__main__":
-    run("EvilAFM", uuid1())
+    run("unclebobmartin", uuid1())

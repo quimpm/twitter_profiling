@@ -13,20 +13,11 @@ if __name__ == "__main__":
         "CREATE TABLE tweet(id integer primary key not null, exec_id str, user_id integer, username text, at text, text text, views integer, replies integer, retweets integer, likes integer, imgs text, video text, link text, time text)"
     )
     con.execute(
-        "CREATE TABLE tweet_sentiment(id integer primary key not null, exec_id str, tweet_id integer, sentiment integer)"
+        "CREATE TABLE tweet_sentiment(id integer primary key not null, exec_id str, tweet_id integer, sentiment integer, label text)"
     )
     con.execute(
-        "CREATE TABLE image_caption(id integer primary key not null, exec_id str, tweet_id integer, caption text)"
+        "CREATE TABLE statistics(id integer primary key not null, exec_id str, user_id integer, like_count integer, view_count integer, replies_count integer, retweet_count integer, average_usage integer, most_viewed integer, most_liked integer, most_discussed integer, average_sentiment integer, average_likes integer, average_views integer, average_replies integer, average_retweets integer)"
     )
     con.execute(
-        "CREATE TABLE link_content(id integer primary key not null, exec_id str, tweet_id int, link_content text)"
-    )
-    con.execute(
-        "CREATE TABLE corpus(id integer primary key not null, exec_id str, user_id int, corpus text)"
-    )
-    con.execute(
-        "CREATE TABLE statistics(id integer primary key not null, exec_id str, user_id integer, like_count integer, view_count integer, replies_count integer, retweet_count integer, average_usage integer, most_viewed integer, most_liked integer, most_discussed integer, average_sentiment integer, average_likes integer, average_replies integer, average_replies integer, average_retweets integer)"
-    )
-    con.execute(
-        "CREATE TABLE keywords(id integer primary key not null, exec_id str, user_id integer, keywords text)"
+        "CREATE TABLE topic_modeling(id integer primary key not null, exec_id str, user_id integer, topic string, count integer)"
     )
