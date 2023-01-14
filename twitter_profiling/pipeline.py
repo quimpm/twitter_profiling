@@ -2,7 +2,7 @@ from airflow import DAG
 import sys
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-from tasks import build_corpus, collect_statistics, image_captioning, \
+from tasks import build_corpus, statistics, image_captioning, \
  scrape_task, relevant_words, sentiment_analysis
 from uuid import uuid1
 from twitter_profiling.model.execution import Execution

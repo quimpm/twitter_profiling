@@ -14,3 +14,5 @@ spacy-transformers
 fasttext
 umap-learn
 matplotlib
+seaborn
+jinja2

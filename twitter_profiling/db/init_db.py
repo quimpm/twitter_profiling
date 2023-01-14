@@ -16,7 +16,7 @@ if __name__ == "__main__":
         "CREATE TABLE tweet_sentiment(id integer primary key not null, exec_id str, tweet_id integer, sentiment integer, label text)"
     )
     con.execute(
-        "CREATE TABLE statistics(id integer primary key not null, exec_id str, user_id integer, like_count integer, view_count integer, replies_count integer, retweet_count integer, average_usage integer, most_viewed integer, most_liked integer, most_discussed integer, average_sentiment integer, average_likes integer, average_views integer, average_replies integer, average_retweets integer)"
+        "CREATE TABLE statistics(id integer primary key not null, exec_id str, user_id integer, like_count integer, view_count integer, replies_count integer, retweet_count integer, most_viewed integer, most_liked integer, most_replied integer, most_retweeted integer, average_sentiment float, average_likes float, average_views float, average_replies float, average_retweets float)"
     )
     con.execute(
         "CREATE TABLE topic_modeling(id integer primary key not null, exec_id str, user_id integer, topic string, count integer)"

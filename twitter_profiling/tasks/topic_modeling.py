@@ -46,10 +46,9 @@ def plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id):
             markeredgecolor="k",
             markersize=6,
         )
-
     plt.title(f"Estimated number of clusters: {n_clusters_}")
     create_static_folder(exec_id)
-    plt.savefig(STATIC_FOLDER+exec_id+"/"+exec_id)
+    plt.savefig(STATIC_FOLDER+exec_id+"/clusters")
 
 
 def get_topics(df, n_clusters_):
@@ -82,7 +81,7 @@ def run(exec_id):
     tokenizer = AutoTokenizer.from_pretrained("vinai/bertweet-base", use_fast=False)
     tweets = session.query(Tweet).filter_by(exec_id=exec_id).all()
     user = session.query(User).filter_by(exec_id=exec_id).first()
-    tweets_text = list(map(lambda x: translate_text(x.text), tweets))
+    tweets_text = list(map(lambda x: x.text, tweets))
     df = pd.DataFrame(tweets_text, columns=['text'])
     features = get_embeddings(bertweet, tokenizer, tweets_text)
     umap_embeddings = umap.UMAP(metric='cosine').fit_transform(features) # Reduce dimensionality to perform better in clustering
