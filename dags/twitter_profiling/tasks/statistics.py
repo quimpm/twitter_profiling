@@ -32,7 +32,7 @@ def get_sentiment(tweets_sentiment):
 def run(exec_id):
     tweets = session.query(Tweet).filter_by(exec_id=exec_id, is_retweeted=False).all()
     user = session.query(User).filter_by(exec_id=exec_id).first()
-    tweets_sentiment = session.query(Sentiment).filter_by(exec_id=exec_id, is_retweeted=False).all()
+    tweets_sentiment = session.query(Sentiment).filter_by(exec_id=exec_id).all()
     like_count, reply_count, retweet_count, view_count = get_counts(tweets)
     like_avg, reply_avg, retweet_avg, view_avg = like_count/len(tweets), reply_count/len(tweets), retweet_count/len(tweets), view_count/len(tweets)
     max_likes, max_retweets, max_replies, max_views = get_maximums(tweets)
