@@ -16,3 +16,5 @@ umap-learn
 matplotlib
 seaborn
 jinja2
+yake
+snscrape

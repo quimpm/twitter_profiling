@@ -13,11 +13,12 @@ class User(Base):
     profile_img = Column(String)
     banner_img = Column(String)
     geolocation = Column(String)
+    url = Column(String)
     join_date = Column(String)
     following = Column(Integer)
     followers = Column(Integer)
 
-    def __int__(self, exec_id, name, at, desc, profile_img, banner_img, geolocation, join_date, following, followers):
+    def __init__(self, exec_id, name, at, desc, profile_img, banner_img, geolocation, url, join_date, following, followers):
         self.exec_id = exec_id
         self.name = name
         self.at = at
@@ -25,9 +26,10 @@ class User(Base):
         self.profile_img = profile_img
         self.banner_img = banner_img
         self.geolocation = geolocation
+        self.url = url
         self.join_date = join_date
         self.following = following
         self.followers = followers
 
     def __hash__(self):
-        return hash(f'{self.exec_id}{self.name}{self.at}{self.desc}{self.profile_img}{self.banner_img}{self.geolocation}{self.join_date}{str(self.following)}{str(self.followers)}')
+        return hash(f'{self.exec_id}{self.name}{self.at}{self.desc}{self.profile_img}{self.banner_img}{self.geolocation}{self.url}{self.join_date}{str(self.following)}{str(self.followers)}')

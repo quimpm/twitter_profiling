@@ -3,6 +3,7 @@ import os
 from twitter_profiling import STATIC_FOLDER
 from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from easynmt import EasyNMT
 
 
 def get_language(text):
@@ -53,3 +54,11 @@ def write_in_tmp(filename, content):
 def create_static_folder(exec_id):
     if not os.path.exists(STATIC_FOLDER+exec_id):
         os.mkdir(STATIC_FOLDER+exec_id)
+
+
+def translate_text(text):
+    model = EasyNMT('opus-mt')
+    try:
+        return model.translate(text, target_lang="en")
+    except:
+        return text

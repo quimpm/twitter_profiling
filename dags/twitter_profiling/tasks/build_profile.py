@@ -1,4 +1,3 @@
-import jinja2
 from jinja2 import Environment, FileSystemLoader
 from twitter_profiling import TEMPLATES_FOLDER, STATIC_FOLDER
 from twitter_profiling.model.user import User

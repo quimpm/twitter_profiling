@@ -2,15 +2,13 @@ import sqlite3
 from twitter_profiling import DB_HOST
 
 if __name__ == "__main__":
+    print(DB_HOST)
     con = sqlite3.connect(DB_HOST)
     con.execute(
-        "CREATE TABLE execution(id integer primary key not null, exec_id str, date text, target text)"
+        "CREATE TABLE user(id integer primary key not null, exec_id str, name text, at text, desc text, profile_img text, banner_img text, geolocation text, url text, join_date text, following integer, followers integer)"
     )
     con.execute(
-        "CREATE TABLE user(id integer primary key not null, exec_id str, name text, at text, desc text, profile_img text, banner_img text, geolocation text, join_date text, following integer, followers integer)"
-    )
-    con.execute(
-        "CREATE TABLE tweet(id integer primary key not null, exec_id str, user_id integer, username text, at text, text text, views integer, replies integer, retweets integer, likes integer, imgs text, video text, link text, time text)"
+        "CREATE TABLE tweet(id integer primary key not null, exec_id str, user_id integer, username text, at text, text text, views integer, replies integer, retweets integer, likes integer, imgs text, link text, time text, is_retweeted boolean)"
     )
     con.execute(
         "CREATE TABLE tweet_sentiment(id integer primary key not null, exec_id str, tweet_id integer, sentiment integer, label text)"
