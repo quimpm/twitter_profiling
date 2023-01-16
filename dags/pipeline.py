@@ -22,8 +22,8 @@ default_args = {
 
 params = {
     "exec_id": Param(str(uuid1())),
-    "num_tweets": Param(500, type="integer"),
-    "username": Param("monkeydquim")
+    "num_tweets": Param(100, type="integer"),
+    "username": Param("unclebobmartin")
 }
 
 dag = DAG('twitter_profiling', default_args=default_args, schedule=None, params=params)
