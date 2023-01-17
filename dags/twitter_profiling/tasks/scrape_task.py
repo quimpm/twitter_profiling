@@ -83,7 +83,7 @@ def scrape_tweets(user, exec_id, n_tweets, scraper, translate):
 
 
 #Main algorithm
-def run(profile: str, exec_id: str, n_tweets: str, translate str):
+def run(profile: str, exec_id: str, n_tweets: str, translate: str):
     n_tweets = int(n_tweets)
     translate = translate == "True"
     scraper = TwitterUserScraper(profile)
@@ -93,4 +93,4 @@ def run(profile: str, exec_id: str, n_tweets: str, translate str):
 
 
 if __name__ == "__main__":
-    run("unclebobmartin", str(uuid1()), "100")
+    run("unclebobmartin", str(uuid1()), "100", False)

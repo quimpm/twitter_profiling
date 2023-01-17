@@ -39,6 +39,7 @@ def run(exec_id):
         "avg_replies": statistics.average_replies,
         "retweet_count": statistics.retweet_count,
         "avg_retweet": statistics.average_retweets,
+        "avg_usage": statistics.average_usage,
         "most_liked_images": most_liked_tweet.imgs.split("|") if most_liked_tweet.imgs else [],
         "most_liked_text": most_liked_tweet.text,
         "most_liked_likes": most_liked_tweet.likes,
