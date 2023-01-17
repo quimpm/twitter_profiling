@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 from twitter_profiling.util import create_static_folder
 from twitter_profiling.model.topic_modeling import TopicModeling
 from twitter_profiling import STATIC_FOLDER
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 
 def plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id):
@@ -61,6 +63,19 @@ def get_topics(df, n_clusters_):
         kw.append(list(map(lambda x: x[0], sorted(kw_extractor.extract_keywords(topic), reverse=True, key=lambda y: y[1]))))
     return kw
 
+def get_topics_tfidf(df, n_clusters_):
+    topics = []
+    kw = []
+    for i in range(n_clusters_):
+        topics.append(list(df[df['cluster'] == i]['text']))
+    vectorizer = TfidfVectorizer(stop_words="english")
+    for topic in topics:
+        X = vectorizer.fit_transform(topic)
+        feature_array = np.array(vectorizer.get_feature_names_out())
+        tfidf_sorting = np.argsort(X.toarray()).flatten()[::-1]
+        top_n = feature_array[tfidf_sorting][:5]
+        kw.append(top_n)
+    return kw
 
 def get_embeddings(bertweet, tokenizer, tweets_text):
     tensors = [torch.tensor([tokenizer.encode(tweet, truncation=True)]) for tweet in tweets_text]
@@ -94,7 +109,7 @@ def run(exec_id):
     noise_ = list(labels).count(-1)
     plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id)
     df['cluster'] = labels
-    topics = get_topics(df, n_clusters_)
+    topics = get_topics_tfidf(df, n_clusters_)
     for i, topic in enumerate(topics):
         topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), n_tweets_topic[i])
         session.add(topic_modeling)

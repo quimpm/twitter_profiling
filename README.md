@@ -74,6 +74,25 @@ This will lead to you to a new page where ypou can configure the execution param
 Finally press to Trigger button to make the program run! From here you can have different Visualizations on how your DAG is doing. (Graph visualitzation, grid visualization)
 Airflow is super powerfull and plenty of insights!
 
+## Technologies Used
+
+- Apache Airflow
+- Selenium
+- snsscrape
+- TheHuggingFace Transformers
+- EasyNMT
+- Opus-MT
+- umap
+- Bert Embedings
+- Scikit TfidfVectorizer & DBSCAN
+- wordcloud
+- seaborn
+- jinja
+- sqlalchemy
+- sqlite
+- Docker
+
+
 ## Author
 
 Quim10^-12
