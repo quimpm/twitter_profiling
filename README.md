@@ -7,18 +7,18 @@ in a database. Which, once highly populated, can give really good social insight
 
 As has been mentioned, this tool recieves as input parameters:
 
-- username: Twitter id of the profile that we want to process through our system.
-- n_tweets: Number of tweets that we want to process of that user
-- translation: In case that is not a english speaker user, we can enable this to translate all tweets to english. (Disclaimer: Eventhough it translates from varelly any language to english, it has a higher computaional cost, translated in terms of time and memory)
+- **username**: Twitter id of the profile that we want to process through our system.
+- **n_tweets**: Number of tweets that we want to process of that user
+- **translation**: In case that is not a english speaker user, we can enable this to translate all tweets to english. (Disclaimer: Eventhough it translates from varelly any language to english, it has a higher computaional cost, translated in terms of time and memory)
 
 And outputs a twitter profile with the following information:
-- Profile information: Includes followers, following, location, profile image, banner image...
-- Topic Modeling: A Topic modeling task is performed to diferentiate the topics that the user usually speaks of. The preprocessing is done using a pretrained Bert model to create embedings from sentences, umap to reduce the dimentionality of those embedings to make the model perform better, and scikit DBSCAN algorithm as the unsupervised ML clustering algorithm. 
-- Sentiment analysis insights: A sentiment analysis is performed to every tweet using the HuggingFace pretrained Transformers. With this, a progression lineplot and a score value for the overall sentiment are compouted.
-- General Tweet statistics: Statistics regarding likes, replies, retweets and views.
-- Best tweets: Most liked, viewed, retweeted and replied tweets
-- Wordcloud: A word cloud of the most used meaningfull words. In orther to create this wordcloud some Cleaning technics are performed such as translating, removing stopwords, pos_tagging to get just nouns and lemathizing.
-- Usage Statistics: Statistics of the usage of the platform performed by the user.
+- **Profile information**: Includes followers, following, location, profile image, banner image...
+- **Topic Modeling**: A Topic modeling task is performed to diferentiate the topics that the user usually speaks of. The preprocessing is done using a pretrained Bert model to create embedings from sentences, umap to reduce the dimentionality of those embedings to make the model perform better, and scikit DBSCAN algorithm as the unsupervised ML clustering algorithm. 
+- **Sentiment analysis insights**: A sentiment analysis is performed to every tweet using the HuggingFace pretrained Transformers. With this, a progression lineplot and a score value for the overall sentiment are compouted.
+- **General Tweet statistics**: Statistics regarding likes, replies, retweets and views.
+- **Best tweets**: Most liked, viewed, retweeted and replied tweets
+- **Wordcloud**: A word cloud of the most used meaningfull words. In orther to create this wordcloud some Cleaning technics are performed such as translating, removing stopwords, pos_tagging to get just nouns and lemathizing.
+- **Usage Statistics**: Statistics of the usage of the platform performed by the user.
 
 An example output of a profile can be found in example folder.
 
@@ -28,10 +28,10 @@ Apache Airflow is a really powefull open-source tool for automatizing the execut
 
 As the subject and the project are about Big Data, I wanted to learn about a real framework to build this data pipelines. Apache Airflow is one of the most populars and is used for really important companies all arround the glove. Moreover, was a perfect fit for my project, as I wanted to create a data pipeline that to go through the following steps:
 
-- Data mining
-- Processing
-- Storing
-- Presenting Results
+- **Data mining**
+- **Processing**
+- **Storing**
+- **Presenting Results**
 
 Apache works with DAG's (Directed Acyclic Graphs), which let you define particular standalone tasks and it's dependencies. With those defined, Apache Airflow manages the dependencies between your tasks when executing.
 
@@ -39,12 +39,12 @@ Apache works with DAG's (Directed Acyclic Graphs), which let you define particul
 
 Let's talk a bit about the tasks that are beeing defined in our twitter_profiling DAG.
 
-- tweet_scraping: Task to scrape data from a twitter profile. To do so, a really powerfull library called Snscrape is beeing used. Other options like Selenium have been explored, but resulted in a way more inefficient scraping and a lot more of dependency problems.
-- sentiment_analysis: Performing a sentiment analysis to the text of every tweet scraperd in the previous task
-- topic modeling: Usage of Bert models for preprocessing to create embedings to translate text to vector numbers. usage of dimensionality reduction algorithms such as umap to reduce the embedings size to allow achieve a faster and better performance of the model. USage of DBSCAN algorithm as a unsupervised clustering algorithm to classify tweets in diferent topics. Keyword extraction technics to extract keywords for each of the topics.
-- plots: With all the processing done start generating visual results for the report.
-- statistics: Process a bit more the data to get overall statistics of the user.
-- build_profile: Generation of the final report as an HTML.
+- **tweet_scraping**: Task to scrape data from a twitter profile. To do so, a really powerfull library called Snscrape is beeing used. Other options like Selenium have been explored, but resulted in a way more inefficient scraping and a lot more of dependency problems.
+- **sentiment_analysis**: Performing a sentiment analysis to the text of every tweet scraperd in the previous task
+- **topic_modeling**: Usage of Bert models for preprocessing to create embedings to translate text to vector numbers. usage of dimensionality reduction algorithms such as umap to reduce the embedings size to allow achieve a faster and better performance of the model. USage of DBSCAN algorithm as a unsupervised clustering algorithm to classify tweets in diferent topics. Keyword extraction technics to extract keywords for each of the topics.
+- **plots**: With all the processing done start generating visual results for the report.
+- **statistics**: Process a bit more the data to get overall statistics of the user.
+- **build_profile**: Generation of the final report as an HTML.
 
 ## Run
 
@@ -92,6 +92,9 @@ Airflow is super powerfull and plenty of insights!
 - sqlite
 - Docker
 
+## Development enviroment
+
+Mac Pro: M1 chip 86x64
 
 ## Author
 
