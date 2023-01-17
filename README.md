@@ -33,9 +33,18 @@ As the subject and the project are about Big Data, I wanted to learn about a rea
 - Storing
 - Presenting Results
 
-Apache works with DAG's (Directed Acyclic Graphs), which let you define particular standalone tasks and it's dependencies. With this defined, Apache Airflow manages the dependencies within your tasks
+Apache works with DAG's (Directed Acyclic Graphs), which let you define particular standalone tasks and it's dependencies. With those defined, Apache Airflow manages the dependencies between your tasks when executing.
 
-## Twitter 
+## Tasks:
+
+Let's talk a bit about the tasks that are beeing defined in our twitter_profiling DAG.
+
+- tweet_scraping: Task to scrape data from a twitter profile. To do so, a really powerfull library called Snscrape is beeing used. Other options like Selenium have been explored, but resulted in a way more inefficient scraping and a lot more of dependency problems.
+- sentiment_analysis: Performing a sentiment analysis to the text of every tweet scraperd in the previous task
+- topic modeling: Usage of Bert models for preprocessing to create embedings to translate text to vector numbers. usage of dimensionality reduction algorithms such as umap to reduce the embedings size to allow achieve a faster and better performance of the model. USage of DBSCAN algorithm as a unsupervised clustering algorithm to classify tweets in diferent topics. Keyword extraction technics to extract keywords for each of the topics.
+- plots: With all the processing done start generating visual results for the report.
+- statistics: Process a bit more the data to get overall statistics of the user.
+- build_profile: Generation of the final report as an HTML.
 
 ## Run
 
@@ -57,6 +66,8 @@ Password: airflow
 ```
 
 Welcome to Airflow world! Don't be shy, you can poke arround and play a bit with the UI. 
+
+To find our dag you have to find tweeter_profiling DAG in the list of the DAGs screen.
 
 To execute the program, you just have to go to the play button in the upper right side of the screen, and click Trigger DAG w/ config.
 This will lead to you to a new page where ypou can configure the execution parameters of the program (username, number of tweets and translation).
