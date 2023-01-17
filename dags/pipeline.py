@@ -23,7 +23,8 @@ default_args = {
 params = {
     "exec_id": Param(str(uuid1())),
     "num_tweets": Param(100, type="integer"),
-    "username": Param("unclebobmartin")
+    "username": Param("unclebobmartin"),
+    "translate": Param(True)
 }
 
 dag = DAG('twitter_profiling', default_args=default_args, schedule=None, params=params)
@@ -33,7 +34,7 @@ execution_id = str(uuid1())
 tweet_scraping_task = PythonOperator(
     task_id='tweet_scraping',
     python_callable=scrape_task.run,
-    op_args=["{{params.username}}", "{{params.exec_id}}", "{{params.num_tweets}}"],
+    op_args=["{{params.username}}", "{{params.exec_id}}", "{{params.num_tweets}}", "{{params.translate}}"],
     dag=dag)
 
 

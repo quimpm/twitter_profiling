@@ -187,3 +187,4 @@ static/
 logs/
 plugins/
 .DS_Store
+data/

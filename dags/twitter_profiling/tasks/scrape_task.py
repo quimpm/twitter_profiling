@@ -3,7 +3,16 @@ from uuid import uuid1, UUID
 from twitter_profiling.model.user import User
 from twitter_profiling.model.tweet import Tweet
 from twitter_profiling.db.db_session import session
-from twitter_profiling.util import translate_text
+from easynmt import EasyNMT
+from twitter_profiling import CACHE_FOLDER
+import psutil
+
+
+def translate_text(text, model):
+    try:
+        return model.translate(text, target_lang="en")
+    except:
+        return text
 
 
 def get_user(exec_id, scraper, target):
@@ -25,7 +34,7 @@ def get_user(exec_id, scraper, target):
                 tweet.user.followersCount
             )
             session.add(user)
-            session.flush()
+            session.commit()
             break
     return user
 
@@ -48,7 +57,8 @@ def parse_links(links):
         return "|".join([link.url for link in links])
 
 
-def scrape_tweets(user, exec_id, n_tweets, scraper):
+def scrape_tweets(user, exec_id, n_tweets, scraper, translate):
+    model = EasyNMT('opus-mt', max_loaded_models=3, cache_folder=CACHE_FOLDER)
     tweets = scraper.get_items()
     for i in range(n_tweets):
         tweet_scraped = next(tweets)
@@ -57,7 +67,7 @@ def scrape_tweets(user, exec_id, n_tweets, scraper):
             user.id,
             tweet_scraped.user.displayname,
             tweet_scraped.user.username,
-            translate_text(tweet_scraped.content),
+            translate_text(tweet_scraped.content, model) if translate else tweet_scraped.content,
             tweet_scraped.viewCount if tweet_scraped.viewCount is not None else 0,
             tweet_scraped.replyCount if tweet_scraped.replyCount is not None else 0,
             tweet_scraped.retweetCount if tweet_scraped.retweetCount is not None else 0,
@@ -68,16 +78,18 @@ def scrape_tweets(user, exec_id, n_tweets, scraper):
             not user.at == tweet_scraped.username
         )
         session.add(tweet)
+        session.commit()
+        print(psutil.virtual_memory())
 
 
 #Main algorithm
-def run(profile: str, exec_id: str, n_tweets: str):
+def run(profile: str, exec_id: str, n_tweets: str, translate str):
     n_tweets = int(n_tweets)
+    translate = translate == "True"
     scraper = TwitterUserScraper(profile)
     user = get_user(str(exec_id), scraper, profile)
-    scrape_tweets(user, str(exec_id), n_tweets, scraper)
+    scrape_tweets(user, str(exec_id), n_tweets, scraper, translate)
     session.commit()
-    print("Job done")
 
 
 if __name__ == "__main__":

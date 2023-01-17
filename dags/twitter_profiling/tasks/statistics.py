@@ -4,6 +4,7 @@ from twitter_profiling.model.sentiment import Sentiment
 from twitter_profiling.model.statistics import Statistics
 from twitter_profiling.model.user import User
 from functools import reduce
+from collections import Counter
 
 
 def get_counts(tweets):
@@ -29,6 +30,11 @@ def get_sentiment(tweets_sentiment):
     return reduce(lambda a, b: a+b, sentiment)
 
 
+def get_usage(tweets):
+    dates = dict(Counter(list(map(lambda x: x.time, tweets))))
+    return reduce(lambda a,b: a+b, dates.values())/len(dates.keys())
+
+
 def run(exec_id):
     tweets = session.query(Tweet).filter_by(exec_id=exec_id, is_retweeted=False).all()
     user = session.query(User).filter_by(exec_id=exec_id).first()
@@ -36,8 +42,9 @@ def run(exec_id):
     like_count, reply_count, retweet_count, view_count = get_counts(tweets)
     like_avg, reply_avg, retweet_avg, view_avg = like_count/len(tweets), reply_count/len(tweets), retweet_count/len(tweets), view_count/len(tweets)
     max_likes, max_retweets, max_replies, max_views = get_maximums(tweets)
+    avg_usage = get_usage(tweets)
     sentiment = get_sentiment(tweets_sentiment)
-    statistics = Statistics(exec_id, user.id, like_count, view_count, reply_count, retweet_count, max_views, max_likes, max_replies, max_retweets, sentiment, like_avg, view_avg, reply_avg, retweet_avg)
+    statistics = Statistics(exec_id, user.id, like_count, view_count, reply_count, retweet_count, max_views, max_likes, max_replies, max_retweets, sentiment, like_avg, view_avg, reply_avg, retweet_avg, avg_usage)
     session.add(statistics)
     session.commit()
 

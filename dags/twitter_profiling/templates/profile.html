@@ -12,6 +12,12 @@
 <body>
     <div class="container">
         <div style="width:100%;">
+            <div style="width:100%; display: flex; flex-direction: column; justify-content: center; align-items: center">
+                {% if banner_img %}
+                    <img src="{{banner_img}}" style="margin-bottom: -75px;">
+                {% endif %}
+                <img src="{{profile_img}}" style="width: 150px">
+            </div>
             <div style="width:100%; display:flex; flex-direction: column; align-items: center; padding-top: 2rem;">
                 <h2>{{ name }}</h2>
                 <h4>{{ at }}</h4>

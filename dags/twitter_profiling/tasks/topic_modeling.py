@@ -63,7 +63,7 @@ def get_topics(df, n_clusters_):
 
 
 def get_embeddings(bertweet, tokenizer, tweets_text):
-    tensors = [torch.tensor([tokenizer.encode(tweet)]) for tweet in tweets_text]
+    tensors = [torch.tensor([tokenizer.encode(tweet, truncation=True)]) for tweet in tweets_text]
     features = []
     with torch.no_grad():
         for tensor in tensors:
@@ -78,7 +78,7 @@ def serialize_keywords(kws):
 
 def run(exec_id):
     bertweet = AutoModel.from_pretrained("vinai/bertweet-base")
-    tokenizer = AutoTokenizer.from_pretrained("vinai/bertweet-base", use_fast=False)
+    tokenizer = AutoTokenizer.from_pretrained("vinai/bertweet-base", use_fast=False, model_max_length=128)
     tweets = session.query(Tweet).filter_by(exec_id=exec_id).all()
     user = session.query(User).filter_by(exec_id=exec_id).first()
     tweets_text = list(map(lambda x: x.text, tweets))

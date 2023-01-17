@@ -21,8 +21,9 @@ class Statistics(Base):
     average_views = Column(Float)
     average_replies = Column(Float)
     average_retweets = Column(Float)
+    average_usage = Column(Float)
 
-    def __init__(self, exec_id, user_id, like_count, view_count, replies_count, retweet_count, most_viewed, most_liked, most_replied, most_retweeted, average_sentiment, average_likes, average_views, average_replies, average_retweets):
+    def __init__(self, exec_id, user_id, like_count, view_count, replies_count, retweet_count, most_viewed, most_liked, most_replied, most_retweeted, average_sentiment, average_likes, average_views, average_replies, average_retweets, average_usage):
         self.exec_id = exec_id
         self.user_id = user_id
         self.like_count = like_count
@@ -38,5 +39,6 @@ class Statistics(Base):
         self.average_views = average_views
         self.average_replies = average_replies
         self.average_retweets = average_retweets
+        self.average_usage = average_usage
 
 
