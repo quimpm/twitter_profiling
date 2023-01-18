@@ -70,9 +70,19 @@ Welcome to Airflow world! Don't be shy, you can poke arround and play a bit with
 To find our dag you have to find tweeter_profiling DAG in the list of the DAGs screen.
 
 To execute the program, you just have to go to the play button in the upper right side of the screen, and click Trigger DAG w/ config.
-This will lead to you to a new page where ypou can configure the execution parameters of the program (username, number of tweets and translation).
+This will lead to you to a new page where you can configure the execution parameters of the program (username, number of tweets and translation).
 Finally press to Trigger button to make the program run! From here you can have different Visualizations on how your DAG is doing. (Graph visualitzation, grid visualization)
 Airflow is super powerfull and plenty of insights!
+
+Once execution is done, results can be found inside the **static/** folder. Also, you can connect to the DB with your favourite DB Client to check that the information has been saved in different tables.
+
+## Project structure
+
+**./dags**: Folder containing the code and the definition od the airflow DAG.
+**./logs**: Folder that contains the logs of our executions in case something goes wrong and we have to audit some task logs.
+**./plugins**: Folder containing airflow plugins. For this projects, there are no plugins used.
+**./static**: Folder containing all the static files, including the reports generated for our program.
+**./examples**: Folder containing some example reports that the application produces.
 
 ## Technologies Used
 
@@ -87,7 +97,7 @@ Airflow is super powerfull and plenty of insights!
 - Scikit TfidfVectorizer & DBSCAN
 - wordcloud
 - seaborn
-- jinja
+- jinja2
 - sqlalchemy
 - sqlite
 - Docker
