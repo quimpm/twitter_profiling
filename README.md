@@ -78,11 +78,11 @@ Once execution is done, results can be found inside the **static/** folder. Also
 
 ## Project structure
 
-**./dags**: Folder containing the code and the definition od the airflow DAG.
-**./logs**: Folder that contains the logs of our executions in case something goes wrong and we have to audit some task logs.
-**./plugins**: Folder containing airflow plugins. For this projects, there are no plugins used.
-**./static**: Folder containing all the static files, including the reports generated for our program.
-**./examples**: Folder containing some example reports that the application produces.
+- **./dags**: Folder containing the code and the definition od the airflow DAG.
+- **./logs**: Folder that contains the logs of our executions in case something goes wrong and we have to audit some task logs.
+- **./plugins**: Folder containing airflow plugins. For this projects, there are no plugins used.
+- **./static**: Folder containing all the static files, including the reports generated for our program.
+- **./examples**: Folder containing some example reports that the application produces.
 
 ## Technologies Used
 
