@@ -13,6 +13,10 @@ from twitter_profiling.util import create_static_folder
 from twitter_profiling.model.topic_modeling import TopicModeling
 from twitter_profiling import STATIC_FOLDER
 from sklearn.feature_extraction.text import TfidfVectorizer
+from kneed import KneeLocator
+import demoji
+import re
+from sklearn.neighbors import NearestNeighbors
 
 
 
@@ -53,29 +57,43 @@ def plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id):
     plt.savefig(STATIC_FOLDER+exec_id+"/clusters")
 
 
-def get_topics(df, n_clusters_):
+def clean_tweet(tweet):
+    tweet = re.sub(r'@\w*', '', tweet).lower()
+    tweet = demoji.replace(tweet, "")
+    return re.sub(r'https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)', '', tweet)
+
+
+def get_topics(df):
     topics = []
     kw = []
-    for i in range(n_clusters_):
-        topics.append(" ".join(list(df[df['cluster'] == i]['text'])))
-    kw_extractor = yake.KeywordExtractor(n=2, top=5)
-    for topic in topics:
-        kw.append(list(map(lambda x: x[0], sorted(kw_extractor.extract_keywords(topic), reverse=True, key=lambda y: y[1]))))
+    clusters = list(df["cluster"].unique())
+    for cluster in clusters:
+        topics.append((cluster, " ".join(list(df[df['cluster'] == cluster]['text']))))
+    kw_extractor = yake.KeywordExtractor(n=1, top=5)
+    for cluster, topic in topics:
+        kw.append((cluster,
+                   list(map(lambda x: x[0], sorted(kw_extractor.extract_keywords(topic), reverse=True, key=lambda y: y[1])))))
     return kw
 
-def get_topics_tfidf(df, n_clusters_):
+
+def get_topics_tfidf(df):
     topics = []
     kw = []
-    for i in range(n_clusters_):
-        topics.append(list(df[df['cluster'] == i]['text']))
+    clusters = list(df["cluster"].unique())
+    for cluster in clusters:
+        topics.append((cluster, list(filter(lambda x: x != "", df[df['cluster'] == cluster]['text']))))
     vectorizer = TfidfVectorizer(stop_words="english")
-    for topic in topics:
-        X = vectorizer.fit_transform(topic)
-        feature_array = np.array(vectorizer.get_feature_names_out())
-        tfidf_sorting = np.argsort(X.toarray()).flatten()[::-1]
-        top_n = feature_array[tfidf_sorting][:5]
-        kw.append(top_n)
+    for cluster, topic in topics:
+        try:
+            X = vectorizer.fit_transform(topic)
+            feature_array = np.array(vectorizer.get_feature_names_out())
+            tfidf_sorting = np.argsort(X.toarray()).flatten()[::-1]
+            top_n = feature_array[tfidf_sorting][:5]
+            kw.append((cluster, top_n.tolist()))
+        except Exception:
+            kw.append((cluster, []))
     return kw
+
 
 def get_embeddings(bertweet, tokenizer, tweets_text):
     tensors = [torch.tensor([tokenizer.encode(tweet, truncation=True)]) for tweet in tweets_text]
@@ -91,6 +109,15 @@ def serialize_keywords(kws):
     return "|".join(list(map(lambda x: ",".join(x), kws)))
 
 
+def calc_neighbour_distances(embeddings):
+    neigh = NearestNeighbors(n_neighbors=2)
+    nbrs = neigh.fit(embeddings)
+    distances, indices = nbrs.kneighbors(embeddings)
+    distances = np.sort(distances, axis=0)
+    distances = distances[:,1]
+    return distances
+
+
 def run(exec_id):
     bertweet = AutoModel.from_pretrained("vinai/bertweet-base")
     tokenizer = AutoTokenizer.from_pretrained("vinai/bertweet-base", use_fast=False, model_max_length=128)
@@ -100,20 +127,26 @@ def run(exec_id):
     df = pd.DataFrame(tweets_text, columns=['text'])
     features = get_embeddings(bertweet, tokenizer, tweets_text)
     umap_embeddings = umap.UMAP(metric='cosine').fit_transform(features) # Reduce dimensionality to perform better in clustering
-    db = DBSCAN(eps=0.35, metric='euclidean', min_samples=4).fit(umap_embeddings) # Fit DBSCAN classifier
+    distances = calc_neighbour_distances(umap_embeddings)
+    knee = KneeLocator(range(0, len(distances)), distances, S=1, curve='convex', direction='increasing')
+    epsilon = distances[knee.knee]
+    db = DBSCAN(eps=epsilon, metric='euclidean', min_samples=2).fit(umap_embeddings) # Fit DBSCAN classifier
     labels = db.labels_
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-    n_tweets_topic = []
-    for i in range(n_clusters_):
-        n_tweets_topic.append(list(labels).count(i))
     noise_ = list(labels).count(-1)
     plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id)
     df['cluster'] = labels
-    topics = get_topics_tfidf(df, n_clusters_)
-    for i, topic in enumerate(topics):
-        topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), n_tweets_topic[i])
-        session.add(topic_modeling)
-    session.add(TopicModeling(exec_id, user.id, "Others", noise_))
+    if len(list(df["cluster"].value_counts(sort=True))) >= 10:
+        top_values = dict(zip(list(df["cluster"].value_counts(sort=True)[:10].index), list(df["cluster"].value_counts(sort=True)[:10])))
+    else:
+        top_values = dict(zip(list(df["cluster"].value_counts(sort=True).index), list(df["cluster"].value_counts(sort=True))))
+    df["text"] = df["text"].map(lambda x: clean_tweet(x))
+    topics = get_topics_tfidf(df)
+    for cluster, topic in topics:
+        if cluster in top_values.keys():
+            topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), top_values[cluster])
+            session.add(topic_modeling)
+    session.add(TopicModeling(exec_id, user.id, "Noise", noise_))
     session.commit()
 
 
