@@ -56,7 +56,7 @@
                     <div style="width:100%; display:flex; flex-direction:row; justify-content: space-between">
                         <div style="width: 100%; display:flex; flex-direction: column; justify-content: center;">
                             {% for topic in topics %}
-                                <label style=" width:100%; display:flex; justify-content: center; padding-top: 0.3rem; font-size: 15px;">{{loop.index}} - {{topic}}</label>
+                                <label style=" width:100%; display:flex; justify-content: center; padding-top: 0.3rem; font-size: 15px;">{{topic[0]}} - {{topic[1]}}</label>
                             {% endfor %}
                         </div>
                     </div>

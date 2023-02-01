@@ -33,7 +33,7 @@ def run(exec_id):
         "join_date": user.join_date,
         "profile_img": user.profile_img,
         "banner_img": user.banner_img,
-        "topics": list(map(lambda x: x.topic, topics)),
+        "topics": list(map(lambda x: (x.cluster_id, x.topic), topics)),
         "description": user.desc,
         "counts": list(map(lambda x: x.count, topics)),
         "sentiment_score": statistics.average_sentiment,

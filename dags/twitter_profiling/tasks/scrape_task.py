@@ -106,12 +106,13 @@ def scrape_tweets(user: User, exec_id: str, n_tweets: int, scraper: TwitterUserS
             tweet_scraped.date.strftime("%Y-%m-%d"),
             not user.at == tweet_scraped.username
         )
+        print(tweet)
         session.add(tweet)
         session.commit()
         print(psutil.virtual_memory())
 
 
-def run(profile: str, exec_id: str, n_tweets: str, translate: str):
+def run(profile: str, exec_id: str, n_tweets: str, translate: bool):
     """
     Tweet scraping algorithm using Snscrape for scraping and EasyNMT for translating from
     autodetected language to english.

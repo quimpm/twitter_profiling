@@ -12,7 +12,7 @@ def get_sentiment_analyzer(exec_id: str, tweet_id: int, text: str):
     :param text: Text of the tweet under analysis
     :return:
     """
-    roberta = 'cardiffnlp/twitter-roberta-base-sentiment-latest'
+    roberta = 'cardiffnlp/twitter-roberta-base-sentiment'
     tokenizer = AutoTokenizer.from_pretrained(roberta)
     model = pipeline("sentiment-analysis", model=roberta, tokenizer=tokenizer)
     result = max(model(text), key=lambda x: x["score"])

@@ -189,10 +189,12 @@ def run(exec_id: str):
     features = get_embeddings(bertweet, tokenizer, tweets_text)
     umap_embeddings = umap.UMAP(metric='cosine').fit_transform(features) # Reduce dimensionality to perform better in clustering
     distances = calc_neighbour_distances(umap_embeddings)
+    print(distances)
     knee = KneeLocator(range(0, len(distances)), distances, S=1, curve='convex', direction='increasing')
     epsilon = distances[knee.knee]
     db = DBSCAN(eps=epsilon, metric='euclidean', min_samples=2).fit(umap_embeddings) # Fit DBSCAN classifier
     labels = db.labels_
+    print(labels)
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
     noise_ = list(labels).count(-1)
     plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id)
@@ -204,8 +206,8 @@ def run(exec_id: str):
     df["text"] = df["text"].map(lambda x: clean_tweet(x))
     topics = get_topics_tfidf(df)
     for cluster, topic in topics:
-        if cluster in top_values.keys():
-            topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), top_values[cluster], cluster)
+        if cluster in top_values.keys() and int(cluster) != -1:
+            topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), top_values[cluster], int(cluster))
             session.add(topic_modeling)
     session.add(TopicModeling(exec_id, user.id, "Noise", noise_, -1))
     session.commit()
