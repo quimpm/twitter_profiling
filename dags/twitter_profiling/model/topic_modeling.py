@@ -10,9 +10,11 @@ class TopicModeling(Base):
     user_id = Column(Integer)
     topic = Column(String)
     count = Column(Integer)
+    cluster_id = Column(Integer)
 
-    def __init__(self, exec_id, user_id, topic, count):
+    def __init__(self, exec_id, user_id, topic, count, cluster_id):
         self.exec_id = exec_id
         self.user_id = user_id
         self.topic = topic
         self.count = count
+        self.cluster_id = cluster_id

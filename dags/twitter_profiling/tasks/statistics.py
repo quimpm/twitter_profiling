@@ -3,11 +3,17 @@ from twitter_profiling.model.tweet import Tweet
 from twitter_profiling.model.sentiment import Sentiment
 from twitter_profiling.model.statistics import Statistics
 from twitter_profiling.model.user import User
+from typing import List, Tuple
 from functools import reduce
 from collections import Counter
 
 
-def get_counts(tweets):
+def get_counts(tweets: List[Tweet]) -> Tuple[int, int, int, int]:
+    """
+    Count the total amount of views, likes, replies and retweets
+    :param tweets:
+    :return:
+    """
     like_count, reply_count, retweet_count, view_count = 0, 0, 0, 0
     for tweet in tweets:
         like_count += tweet.likes
@@ -17,7 +23,12 @@ def get_counts(tweets):
     return like_count, reply_count, retweet_count, view_count
 
 
-def get_maximums(tweets):
+def get_maximums(tweets: List[Tweet]) -> Tuple[int, int, int, int]:
+    """
+    Retrieve tweets with best statistics of views, likes, replies and retweets
+    :param tweets: Tweets of the user
+    :return:
+    """
     max_likes = max(tweets, key=lambda tweet: tweet.likes).id
     max_replies = max(tweets, key=lambda tweet: tweet.replies).id
     max_views = max(tweets, key=lambda tweet: tweet.views).id
@@ -25,17 +36,32 @@ def get_maximums(tweets):
     return max_likes, max_retweets, max_replies, max_views
 
 
-def get_sentiment(tweets_sentiment):
+def get_sentiment(tweets_sentiment: List[Sentiment]) -> int:
+    """
+    Calculate a sentiment score for the user
+    :param tweets_sentiment: sentiment extracted from user tweets
+    :return:
+    """
     sentiment = list(map(lambda x: -x.sentiment if x.label == "NEGATIVE" else x.sentiment, tweets_sentiment))
     return reduce(lambda a, b: a+b, sentiment)
 
 
-def get_usage(tweets):
+def get_usage(tweets: List[Tweet]) -> int:
+    """
+    Get the usage that the user performs of the platform
+    :param tweets: Tweets of the user
+    :return:
+    """
     dates = dict(Counter(list(map(lambda x: x.time, tweets))))
     return reduce(lambda a,b: a+b, dates.values())/len(dates.keys())
 
 
-def run(exec_id):
+def run(exec_id: str):
+    """
+    Task to calculate statistics based on the preprocessed information
+    :param exec_id: correlation id of the execution
+    :return:
+    """
     tweets = session.query(Tweet).filter_by(exec_id=exec_id, is_retweeted=False).all()
     user = session.query(User).filter_by(exec_id=exec_id).first()
     tweets_sentiment = session.query(Sentiment).filter_by(exec_id=exec_id).all()

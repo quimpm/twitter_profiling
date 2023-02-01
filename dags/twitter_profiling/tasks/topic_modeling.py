@@ -19,8 +19,16 @@ import re
 from sklearn.neighbors import NearestNeighbors
 
 
-
 def plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id):
+    """
+    Function to plot the clusters in a 2d graphic
+    :param labels: List of clusters
+    :param n_clusters_: Number of clusters
+    :param db: dbscan algorithm
+    :param umap_embeddings: 2D transformation of the BERTweet embedings
+    :param exec_id: correlation id of the execution
+    :return:
+    """
     unique_labels = set(labels)
     core_samples_mask = np.zeros_like(labels, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
@@ -58,12 +66,22 @@ def plot_clusters(labels, n_clusters_, db, umap_embeddings, exec_id):
 
 
 def clean_tweet(tweet):
+    """
+    Cleaning algorithm to perform KW and TF-IDF
+    :param tweet: text of the tweet
+    :return: text of the tweet cleaned
+    """
     tweet = re.sub(r'@\w*', '', tweet).lower()
     tweet = demoji.replace(tweet, "")
     return re.sub(r'https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)', '', tweet)
 
 
 def get_topics(df):
+    """
+    Keyword extraction using YAKE to extract the most relevant words from the clusters
+    :param df: DataFrame containing the classification
+    :return: List of top 5 keywords sorted by relevance
+    """
     topics = []
     kw = []
     clusters = list(df["cluster"].unique())
@@ -77,6 +95,11 @@ def get_topics(df):
 
 
 def get_topics_tfidf(df):
+    """
+    Perform TF-IDF to the different clusters
+    :param df: DataFrame containing the classification
+    :return: List of top 5 keywords sorted by relevance
+    """
     topics = []
     kw = []
     clusters = list(df["cluster"].unique())
@@ -96,6 +119,13 @@ def get_topics_tfidf(df):
 
 
 def get_embeddings(bertweet, tokenizer, tweets_text):
+    """
+    Extract embedings from text using BERTweet
+    :param bertweet: bertweet model
+    :param tokenizer: tokenizer for fitting BERTweet model
+    :param tweets_text: text that has to be transformed
+    :return:
+    """
     tensors = [torch.tensor([tokenizer.encode(tweet, truncation=True)]) for tweet in tweets_text]
     features = []
     with torch.no_grad():
@@ -106,10 +136,20 @@ def get_embeddings(bertweet, tokenizer, tweets_text):
 
 
 def serialize_keywords(kws):
+    """
+    Serialize the keywords for a certain topic to be storable
+    :param kws: list of keywords
+    :return: serialized string containing all keywords
+    """
     return "|".join(list(map(lambda x: ",".join(x), kws)))
 
 
 def calc_neighbour_distances(embeddings):
+    """
+    Perform nearest neighbours analisys for each point
+    :param embeddings: Points in a 2d space
+    :return: Minimum neighbour distances
+    """
     neigh = NearestNeighbors(n_neighbors=2)
     nbrs = neigh.fit(embeddings)
     distances, indices = nbrs.kneighbors(embeddings)
@@ -118,7 +158,28 @@ def calc_neighbour_distances(embeddings):
     return distances
 
 
-def run(exec_id):
+def run(exec_id: str):
+    """
+    Topic Extraction algorithm, the algorithm has the following steps:
+    - Bert Embeddings:  Using the pretrained BERTweet model convert Tweets text to BERT embeddings (vectors).
+                        Those vectors contain the all the information of the tweet text encoded.
+    - UMAP:             UMAP is an algorithm to perform dimensionality reduction to high dimensional data that has similarities.
+                        It's an algorithm able to convert n-dimensional datasets to 2-dimensional datasets, which
+                        makes the work and analysis of the data a lot more easyer
+    - NN:               Nearest neighbours analysis to get the distances from each point to the closest neighbour and order from lowest o biggest.
+    - Knee:             Find the point of maximum curbature using kneed, this will be our epsilon parameter for DBSCAN.
+    - DBSCAN:           Clustering using DB Scann algorithm. DBSCAN has been chosed as is an algorithm that does not require
+                        pre vious knowledge on the dataset. IT has two main parameters that have been fine-tuned.
+                        - epsilon:  Maximum distance from one point to another to be considered a neighbour.
+                                    We set this as the point of maximum curbature of the nearest neighbours.
+                        - min_pts:  Minimum number of points for a cluster to be considered a cluster.
+                                    We set this to 2 as we want to get all possible clusters. After, we can filter by relevancy.
+    - Plot Clusters:    Plot the generated clusters
+    - TF-IDF/YAKE:      Get the most relevant words for each of the clusters to get the final topics. TF-IDF has been observed
+                        to work better than YAKE.
+    :param exec_id: correlation id of the execution
+    :return:
+    """
     bertweet = AutoModel.from_pretrained("vinai/bertweet-base")
     tokenizer = AutoTokenizer.from_pretrained("vinai/bertweet-base", use_fast=False, model_max_length=128)
     tweets = session.query(Tweet).filter_by(exec_id=exec_id).all()
@@ -144,9 +205,9 @@ def run(exec_id):
     topics = get_topics_tfidf(df)
     for cluster, topic in topics:
         if cluster in top_values.keys():
-            topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), top_values[cluster])
+            topic_modeling = TopicModeling(exec_id, user.id, ",".join(topic), top_values[cluster], cluster)
             session.add(topic_modeling)
-    session.add(TopicModeling(exec_id, user.id, "Noise", noise_))
+    session.add(TopicModeling(exec_id, user.id, "Noise", noise_, -1))
     session.commit()
 
 

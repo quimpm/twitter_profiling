@@ -8,6 +8,12 @@ from twitter_profiling.db.db_session import session
 
 
 def run(exec_id):
+    """
+    Construct the profile reading the required computations from the previous steps and building the data structure
+    that will be forwarded to the HTML template.
+    :param exec_id: correlation id of the execution
+    :return:
+    """
     user = session.query(User).filter_by(exec_id=exec_id).first()
     topics = session.query(TopicModeling).filter_by(exec_id=exec_id).all()
     statistics = session.query(Statistics).filter_by(exec_id=exec_id).first()

@@ -16,7 +16,7 @@ def run():
         "CREATE TABLE statistics(id integer primary key not null, exec_id str, user_id integer, like_count integer, view_count integer, replies_count integer, retweet_count integer, most_viewed integer, most_liked integer, most_replied integer, most_retweeted integer, average_sentiment float, average_likes float, average_views float, average_replies float, average_retweets float, average_usage float)"
     )
     con.execute(
-        "CREATE TABLE topic_modeling(id integer primary key not null, exec_id str, user_id integer, topic string, count integer)"
+        "CREATE TABLE topic_modeling(id integer primary key not null, exec_id str, user_id integer, topic string, count integer, cluster_id integer)"
     )
 
 if __name__ == "__main__":

@@ -14,9 +14,15 @@ import re
 from wordcloud import WordCloud
 from collections import Counter
 import nltk
+from typing import List
 
 
-def plot_like_evolution(tweets, exec_id):
+def plot_like_evolution(tweets: List[Tweet], exec_id: str):
+    """
+    Plot the likes evolution through the time
+    :param tweets: List of tweets
+    :param exec_id: correlation id of the execution
+    """
     plt.figure(figsize=(10, 10))
     d = {
         "likes": reversed(list(map(lambda x: x.likes, tweets))),
@@ -30,7 +36,12 @@ def plot_like_evolution(tweets, exec_id):
     plt.clf()
 
 
-def plot_views_evolution(tweets, exec_id):
+def plot_views_evolution(tweets: List[Tweet], exec_id: str):
+    """
+    Plot the views evolution through the time
+    :param tweets: List of tweets
+    :param exec_id: correlation id of the execution
+    """
     plt.figure(figsize=(10, 10))
     d = {
         "views": reversed(list(map(lambda x: x.views, tweets))),
@@ -44,7 +55,12 @@ def plot_views_evolution(tweets, exec_id):
     plt.clf()
 
 
-def plot_replies_evolution(tweets, exec_id):
+def plot_replies_evolution(tweets: List[Tweet], exec_id: str):
+    """
+    Plot the replies evolution through the time
+    :param tweets: List of tweets
+    :param exec_id: correlation id of the execution
+    """
     plt.figure(figsize=(10, 10))
     d = {
         "replies": reversed(list(map(lambda x: x.replies, tweets))),
@@ -58,7 +74,12 @@ def plot_replies_evolution(tweets, exec_id):
     plt.clf()
 
 
-def plot_retweet_evolution(tweets, exec_id):
+def plot_retweet_evolution(tweets: List[Tweet], exec_id: str):
+    """
+    Plot the retweet evolution through the time
+    :param tweets: List of tweets
+    :param exec_id: correlation id of the execution
+    """
     plt.figure(figsize=(10, 10))
     d = {
         "retweets": reversed(list(map(lambda x: x.retweets, tweets))),
@@ -72,7 +93,14 @@ def plot_retweet_evolution(tweets, exec_id):
     plt.clf()
 
 
-def plot_sentiment_evolution(sentiment, tweets, exec_id):
+def plot_sentiment_evolution(sentiment: List[Sentiment], tweets: List[Tweet], exec_id: str):
+    """
+    Plot the evolution of the sentiment through the time for the user
+    :param sentiment: List of preprocesed Sentiment Entities
+    :param tweets: List of Tweets
+    :param exec_id: correlation id of the execution
+    :return:
+    """
     plt.figure(figsize=(10, 10))
     d = {
         "sentiment": reversed(list(map(lambda x: x.sentiment if x.label == "POSITIVE" else -x.sentiment, sentiment))),
@@ -86,11 +114,17 @@ def plot_sentiment_evolution(sentiment, tweets, exec_id):
     plt.clf()
 
 
-def plot_topic_count(topics, exec_id):
+def plot_topic_count(topics: List[TopicModeling], exec_id: str):
+    """
+    Plot the amount of tweets that each topic contains
+    :param topics: List of processed Topics
+    :param exec_id: correlation id of the execution
+    :return:
+    """
     plt.figure(figsize=(10, 10))
     d = {
         "topic_count": list(map(lambda x: x.count, topics)),
-        "topic": list(map(lambda x: x.id, topics))
+        "topic": list(map(lambda x: x.cluster_id, topics))
     }
     df = pd.DataFrame(d)
     barplot = sns.barplot(df, x="topic", y="topic_count")
@@ -99,7 +133,17 @@ def plot_topic_count(topics, exec_id):
     plt.clf()
 
 
-def plot_word_cloud(tweets, exec_id):
+def plot_word_cloud(tweets: List[Tweet], exec_id: str):
+    """
+    Plot a world cloud to visualize the most relevant words for the user, for doing so, some cleaning is performed:
+    - Delete Alfanumeric chars
+    - Standarize text to lowercase
+    - Remove stopwords
+    - Pos tag classification to retrieve just Nouns
+    - Lemathize
+    :param tweets: Tweets of the user
+    :param exec_id: correlation id of the execution
+    """
     corpus = ""
     lemmatizer = WordNetLemmatizer()
     for tweet in tweets:
@@ -113,17 +157,27 @@ def plot_word_cloud(tweets, exec_id):
     plt.clf()
 
 
-def plot_usage_barplot(tweets, exec_id):
+def plot_usage_barplot(tweets: List[Tweet], exec_id: str):
+    """
+    Build a plot to check the amount of tweets tweeted per day
+    :param tweets: List of Tweets
+    :param exec_id: correlation id of the execution
+    """
     count = dict(Counter(list(map(lambda x: x.time, tweets))))
     d = {"date": count.keys(), "count": count.values()}
     df = pd.DataFrame(d)
     barplot = sns.barplot(df, x="date", y="count")
-    barplot.set(title='Topic Tweet Count')
+    barplot.set(title='Average Daily Usage')
+    plt.xticks(rotation=90, fontsize=9)
     barplot.figure.savefig(STATIC_FOLDER + exec_id + "/usage")
     plt.clf()
 
 
-def run(exec_id):
+def run(exec_id: str):
+    """
+    Build diferent plots to visualize user computation results
+    :param exec_id: correletion id of the execution
+    """
     nltk.download('stopwords')
     nltk.download('averaged_perceptron_tagger')
     nltk.download('wordnet')
