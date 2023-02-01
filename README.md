@@ -72,7 +72,7 @@ To find our dag you have to find tweeter_profiling DAG in the list of the DAGs s
 To execute the program, you just have to go to the play button in the upper right side of the screen, and click Trigger DAG w/ config.
 This will lead to you to a new page where you can configure the execution parameters of the program (username, number of tweets and translation).
 Finally press to Trigger button to make the program run! From here you can have different Visualizations on how your DAG is doing. (Graph visualitzation, grid visualization)
-Airflow is super powerfull and plenty of insights!
+Airflow is super powerful and plenty of insights!
 
 Once execution is done, results can be found inside the **static/** folder. Also, you can connect to the DB with your favourite DB Client to check that the information has been saved in different tables.
 
@@ -88,19 +88,20 @@ Once execution is done, results can be found inside the **static/** folder. Also
 
 - Apache Airflow
 - Selenium
-- snsscrape
+- snscrape
 - TheHuggingFace Transformers
 - EasyNMT
 - Opus-MT
 - umap
 - Bert Embedings
-- Scikit TfidfVectorizer & DBSCAN
+- Scikit TfidfVectorizer, DBSCAN & NearestNeighbours
 - wordcloud
 - seaborn
 - jinja2
 - sqlalchemy
 - sqlite
 - Docker
+- kneed
 
 ## Development enviroment
 
