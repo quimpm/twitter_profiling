@@ -42,7 +42,7 @@ def get_sentiment(tweets_sentiment: List[Sentiment]) -> int:
     :param tweets_sentiment: sentiment extracted from user tweets
     :return:
     """
-    sentiment = list(map(lambda x: -x.sentiment if x.label == "NEGATIVE" else x.sentiment, tweets_sentiment))
+    sentiment = list(map(lambda x: -x.sentiment if x.label == "negative" else x.sentiment if x.label == "positive" else 0, tweets_sentiment))
     return reduce(lambda a, b: a+b, sentiment)
 
 
