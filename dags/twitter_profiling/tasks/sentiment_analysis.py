@@ -15,7 +15,7 @@ def download_label_mapping():
     labels = {"LABEL_"+str(row[0]): row[1] for row in csvreader if len(row) > 1}
     return labels
 
-def get_sentiment_analyzer(exec_id: str, tweet_id: int, text: str, labels: Dict[str,str]):
+def get_sentiment_analyzer(exec_id: str, tweet_id: int, text: str, labels: Dict[str,str], model):
     """
     Perform sentiment analysis using RoBERTa model which has been carefully trained using milions of selected tweets
     :param exec_id: Correlation id of the execution
@@ -23,9 +23,6 @@ def get_sentiment_analyzer(exec_id: str, tweet_id: int, text: str, labels: Dict[
     :param text: Text of the tweet under analysis
     :return:
     """
-    roberta = 'cardiffnlp/twitter-roberta-base-sentiment'
-    tokenizer = AutoTokenizer.from_pretrained(roberta)
-    model = pipeline("sentiment-analysis", model=roberta, tokenizer=tokenizer)
     result = max(model(text), key=lambda x: x["score"])
     sentiment = Sentiment(exec_id=exec_id, tweet_id=tweet_id, sentiment=result["score"], label=labels[result["label"]])
     session.add(sentiment)
@@ -38,8 +35,11 @@ def run(exec_id: str):
     """
     labels = download_label_mapping()
     tweets = session.query(Tweet).filter_by(exec_id=exec_id)
+    roberta = 'cardiffnlp/twitter-roberta-base-sentiment'
+    tokenizer = AutoTokenizer.from_pretrained(roberta)
+    model = pipeline("sentiment-analysis", model=roberta, tokenizer=tokenizer)
     for tweet in tweets:
-        get_sentiment_analyzer(exec_id, tweet.id, tweet.text, labels)
+        get_sentiment_analyzer(exec_id, tweet.id, tweet.text, labels, model)
     session.commit()
 
 
