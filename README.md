@@ -102,6 +102,7 @@ Once execution is done, results can be found inside the **static/** folder. Also
 - sqlite
 - Docker
 - kneed
+- YAKE
 
 ## Development enviroment
 
