@@ -15,6 +15,7 @@ from wordcloud import WordCloud
 from collections import Counter
 import nltk
 from typing import List
+from datetime import datetime
 
 
 def plot_like_evolution(tweets: List[Tweet], exec_id: str):
@@ -26,7 +27,7 @@ def plot_like_evolution(tweets: List[Tweet], exec_id: str):
     plt.figure(figsize=(10, 10))
     d = {
         "likes": reversed(list(map(lambda x: x.likes, tweets))),
-        "time": reversed(list(map(lambda x: x.time, tweets)))
+        "time": reversed(list(map(lambda x: datetime.strptime(x.time, '%Y-%m-%d').date(), tweets)))
     }
     df = pd.DataFrame(d)
     barplot = sns.lineplot(df, x="time", y="likes")
@@ -45,7 +46,7 @@ def plot_views_evolution(tweets: List[Tweet], exec_id: str):
     plt.figure(figsize=(10, 10))
     d = {
         "views": reversed(list(map(lambda x: x.views, tweets))),
-        "time": reversed(list(map(lambda x: x.time, tweets)))
+        "time": reversed(list(map(lambda x: datetime.strptime(x.time, '%Y-%m-%d').date(), tweets)))
     }
     df = pd.DataFrame(d)
     barplot = sns.lineplot(df, x="time", y="views")
@@ -64,7 +65,7 @@ def plot_replies_evolution(tweets: List[Tweet], exec_id: str):
     plt.figure(figsize=(10, 10))
     d = {
         "replies": reversed(list(map(lambda x: x.replies, tweets))),
-        "time": reversed(list(map(lambda x: x.time, tweets)))
+        "time": reversed(list(map(lambda x: datetime.strptime(x.time, '%Y-%m-%d').date(), tweets)))
     }
     df = pd.DataFrame(d)
     barplot = sns.lineplot(df, x="time", y="replies")
@@ -83,7 +84,7 @@ def plot_retweet_evolution(tweets: List[Tweet], exec_id: str):
     plt.figure(figsize=(10, 10))
     d = {
         "retweets": reversed(list(map(lambda x: x.retweets, tweets))),
-        "time": reversed(list(map(lambda x: x.time, tweets)))
+        "time": reversed(list(map(lambda x: datetime.strptime(x.time, '%Y-%m-%d').date(), tweets)))
     }
     df = pd.DataFrame(d)
     barplot = sns.lineplot(df, x="time", y="retweets")
@@ -103,8 +104,8 @@ def plot_sentiment_evolution(sentiment: List[Sentiment], tweets: List[Tweet], ex
     """
     plt.figure(figsize=(10, 10))
     d = {
-        "sentiment": reversed(list(map(lambda x: x.sentiment if x.label == "POSITIVE" else -x.sentiment, sentiment))),
-        "time": reversed(list(map(lambda x: x.time, tweets)))
+        "sentiment": reversed(list(map(lambda x: x.sentiment if x.label == "positive" else -x.sentiment if x.label == "negative" else 0, sentiment))),
+        "time": reversed(list(map(lambda x: datetime.strptime(x.time, '%Y-%m-%d').date(), tweets)))
     }
     df = pd.DataFrame(d)
     barplot = sns.lineplot(df, x="time", y="sentiment")
@@ -163,7 +164,7 @@ def plot_usage_barplot(tweets: List[Tweet], exec_id: str):
     :param tweets: List of Tweets
     :param exec_id: correlation id of the execution
     """
-    count = dict(Counter(list(map(lambda x: x.time, tweets))))
+    count = dict(Counter(list(map(lambda x: datetime.strptime(x.time, '%Y-%m-%d').date(), tweets))))
     d = {"date": count.keys(), "count": count.values()}
     df = pd.DataFrame(d)
     barplot = sns.barplot(df, x="date", y="count")
